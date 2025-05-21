@@ -22,15 +22,17 @@ class MyApp extends StatelessWidget {
 class Animal {
   final int id;
   final String name;
+  final String? imageUrl;
 
   Animal({
-    this.id,
-    this.name,
+    required this.id,
+    required this.name,
+    this.imageUrl,
   });
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({super.key, required this.title});
   final String title;
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -38,49 +40,58 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   static List<Animal> _animals = [
-    Animal(id: 1, name: "Lion"),
-    Animal(id: 2, name: "Flamingo"),
-    Animal(id: 3, name: "Hippo"),
-    Animal(id: 4, name: "Horse"),
-    Animal(id: 5, name: "Tiger"),
-    Animal(id: 6, name: "Penguin"),
-    Animal(id: 7, name: "Spider"),
-    Animal(id: 8, name: "Snake"),
-    Animal(id: 9, name: "Bear"),
-    Animal(id: 10, name: "Beaver"),
-    Animal(id: 11, name: "Cat"),
-    Animal(id: 12, name: "Fish"),
-    Animal(id: 13, name: "Rabbit"),
-    Animal(id: 14, name: "Mouse"),
-    Animal(id: 15, name: "Dog"),
-    Animal(id: 16, name: "Zebra"),
-    Animal(id: 17, name: "Cow"),
-    Animal(id: 18, name: "Frog"),
-    Animal(id: 19, name: "Blue Jay"),
-    Animal(id: 20, name: "Moose"),
-    Animal(id: 21, name: "Gecko"),
-    Animal(id: 22, name: "Kangaroo"),
-    Animal(id: 23, name: "Shark"),
-    Animal(id: 24, name: "Crocodile"),
-    Animal(id: 25, name: "Owl"),
-    Animal(id: 26, name: "Dragonfly"),
-    Animal(id: 27, name: "Dolphin"),
+    Animal(id: 1, name: "Lion", imageUrl: 'assets/images/profile.jpg'),
+    Animal(id: 2, name: "Flamingo", imageUrl: 'assets/images/profile.jpg'),
+    Animal(id: 3, name: "Hippo", imageUrl: 'assets/images/profile.jpg'),
+    Animal(id: 4, name: "Horse", imageUrl: 'assets/images/profile.jpg'),
+    Animal(id: 5, name: "Tiger", imageUrl: 'assets/images/profile.jpg'),
+    Animal(id: 6, name: "Penguin", imageUrl: 'assets/images/profile.jpg'),
+    Animal(id: 7, name: "Spider", imageUrl: 'assets/images/profile.jpg'),
+    Animal(id: 8, name: "Snake", imageUrl: 'assets/images/profile.jpg'),
+    Animal(id: 9, name: "Bear", imageUrl: 'assets/images/profile.jpg'),
+    Animal(id: 10, name: "Beaver", imageUrl: 'assets/images/profile.jpg'),
+    Animal(id: 11, name: "Cat", imageUrl: 'assets/images/profile.jpg'),
+    Animal(id: 12, name: "Fish", imageUrl: 'assets/images/profile.jpg'),
+    Animal(id: 13, name: "Rabbit", imageUrl: 'assets/images/profile.jpg'),
+    Animal(id: 14, name: "Mouse", imageUrl: 'assets/images/profile.jpg'),
+    Animal(id: 15, name: "Dog", imageUrl: 'assets/images/profile.jpg'),
+    Animal(id: 16, name: "Zebra", imageUrl: 'assets/images/profile.jpg'),
+    Animal(id: 17, name: "Cow", imageUrl: 'assets/images/profile.jpg'),
+    Animal(id: 18, name: "Frog", imageUrl: 'assets/images/profile.jpg'),
+    Animal(id: 19, name: "Blue Jay", imageUrl: 'assets/images/profile.jpg'),
+    Animal(id: 20, name: "Moose", imageUrl: 'assets/images/profile.jpg'),
+    Animal(id: 21, name: "Gecko", imageUrl: 'assets/images/profile.jpg'),
+    Animal(id: 22, name: "Kangaroo", imageUrl: 'assets/images/profile.jpg'),
+    Animal(id: 23, name: "Shark", imageUrl: 'assets/images/profile.jpg'),
+    Animal(id: 24, name: "Crocodile", imageUrl: 'assets/images/profile.jpg'),
+    Animal(id: 25, name: "Owl", imageUrl: 'assets/images/profile.jpg'),
+    Animal(id: 26, name: "Dragonfly", imageUrl: 'assets/images/profile.jpg'),
+    Animal(id: 27, name: "Dolphin", imageUrl: 'assets/images/profile.jpg'),
   ];
-  final _items = _animals
-      .map((animal) => MultiSelectItem<Animal>(animal, animal.name))
+  final _items1 = _animals
+      .map((animal) => MultiSelectItem<Animal>(animal, animal.name,
+          imageUrl: animal.imageUrl))
       .toList();
-  //List<Animal> _selectedAnimals = [];
-  List<Animal> _selectedAnimals2 = [];
-  List<Animal> _selectedAnimals3 = [];
-  //List<Animal> _selectedAnimals4 = [];
-  List<Animal> _selectedAnimals5 = [];
-  final _multiSelectKey = GlobalKey<FormFieldState>();
 
-  @override
-  void initState() {
-    _selectedAnimals5 = _animals;
-    super.initState();
-  }
+  final _items2 = _animals
+      .map((animal) => MultiSelectItem<Animal>(animal, animal.name,
+          imageUrl: animal.imageUrl))
+      .toList();
+  final _items3 = _animals
+      .map((animal) => MultiSelectItem<Animal>(animal, animal.name,
+          imageUrl: animal.imageUrl))
+      .toList();
+  final _items4 = _animals
+      .map((animal) => MultiSelectItem<Animal>(animal, animal.name,
+          imageUrl: animal.imageUrl))
+      .toList();
+
+  final _items5 = _animals
+      .map((animal) => MultiSelectItem<Animal>(animal, animal.name,
+          imageUrl: animal.imageUrl))
+      .toList();
+
+  final _multiSelectKey = GlobalKey<FormFieldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -99,15 +110,25 @@ class _MyHomePageState extends State<MyHomePage> {
               // Rounded blue MultiSelectDialogField
               //################################################################################################
               MultiSelectDialogField(
-                items: _items,
-                title: Text("Animals"),
-                selectedColor: Colors.blue,
-                decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.1),
-                  borderRadius: BorderRadius.all(Radius.circular(40)),
-                  border: Border.all(
-                    color: Colors.blue,
-                    width: 2,
+                dialogType: DialogType.dialog,
+                title: Text("Animals1"),
+                fieldPanelConfig: MultiSelectPanelConfig<Animal>(
+                  items: _items1,
+                  itemsDisplayMode: ItemsDisplayMode.selected,
+                  selectedColor: Colors.blue,
+                ),
+                dialogPanelConfig: MultiSelectPanelConfig<Animal>(
+                  items: _items1,
+                  itemViewType: ItemViewType.CHIP,
+                  itemsDisplayMode: ItemsDisplayMode.all,
+                  selectedColor: Colors.blue,
+                  decoration: BoxDecoration(
+                    color: Colors.blue.withOpacity(0.1),
+                    borderRadius: BorderRadius.all(Radius.circular(40)),
+                    border: Border.all(
+                      color: Colors.blue,
+                      width: 2,
+                    ),
                   ),
                 ),
                 buttonIcon: Icon(
@@ -124,6 +145,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 onConfirm: (results) {
                   //_selectedAnimals = results;
                 },
+                decoration: BoxDecoration(
+                  color: Colors.blue.withOpacity(0.1),
+                  borderRadius: BorderRadius.all(Radius.circular(40)),
+                  border: Border.all(
+                    color: Colors.blue,
+                    width: 2,
+                  ),
+                ),
               ),
               SizedBox(height: 50),
               //################################################################################################
@@ -140,25 +169,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 child: Column(
                   children: <Widget>[
-                    MultiSelectBottomSheetField(
-                      initialChildSize: 0.4,
-                      listType: MultiSelectListType.CHIP,
+                    MultiSelectBottomSheetField<Animal>(
+                      title: Text("Animals2"),
                       searchable: true,
+                      initialChildSize: 0.4,
                       buttonText: Text("Favorite Animals"),
-                      title: Text("Animals"),
-                      items: _items,
-                      onConfirm: (values) {
-                        _selectedAnimals2 = values;
-                      },
-                      chipDisplay: MultiSelectChipDisplay(
-                        onTap: (value) {
-                          setState(() {
-                            _selectedAnimals2.remove(value);
-                          });
-                        },
+                      fieldPanelConfig: MultiSelectPanelConfig<Animal>(
+                        items: _items2,
+                      ),
+                      dialogPanelConfig: MultiSelectPanelConfig<Animal>(
+                        items: _items2,
                       ),
                     ),
-                    _selectedAnimals2 == null || _selectedAnimals2.isEmpty
+                    !hasSelected(_items2)
                         ? Container(
                             padding: EdgeInsets.all(10),
                             alignment: Alignment.centerLeft,
@@ -174,36 +197,47 @@ class _MyHomePageState extends State<MyHomePage> {
               //################################################################################################
               // MultiSelectBottomSheetField with validators
               //################################################################################################
-              MultiSelectBottomSheetField<Animal>(
+              MultiSelectDialogField<Animal>(
                 key: _multiSelectKey,
+                title: Text("Animals3"),
+                dialogType: DialogType.bottomSheet,
+                searchable: true,
                 initialChildSize: 0.7,
                 maxChildSize: 0.95,
-                title: Text("Animals"),
                 buttonText: Text("Favorite Animals"),
-                items: _items,
-                searchable: true,
                 validator: (values) {
                   if (values == null || values.isEmpty) {
                     return "Required";
                   }
-                  List<String> names = values.map((e) => e.name).toList();
+                  List<String> names =
+                      values.map((e) => e.name).toList();
                   if (names.contains("Frog")) {
                     return "Frogs are weird!";
                   }
                   return null;
                 },
-                onConfirm: (values) {
-                  setState(() {
-                    _selectedAnimals3 = values;
-                  });
-                  _multiSelectKey.currentState.validate();
-                },
-                chipDisplay: MultiSelectChipDisplay(
+                onConfirm: (values) {},
+                fieldPanelConfig: MultiSelectPanelConfig<Animal>(
+                  items: _items3,
+                  itemsDisplayMode: ItemsDisplayMode.selected,
                   onTap: (item) {
                     setState(() {
-                      _selectedAnimals3.remove(item);
+                      // do nothing, but can refresh the UI immediately.
+                      // you can use _items1 as it's select mode changed;
                     });
-                    _multiSelectKey.currentState.validate();
+                    _multiSelectKey.currentState!.validate();
+                  },
+                ),
+                dialogPanelConfig: MultiSelectPanelConfig<Animal>(
+                  items: _items3,
+                  itemViewType: ItemViewType.CHECKBOX_LIST,
+                  listType: ListTypes.verticalList,
+                  onTap: (item) {
+                    setState(() {
+                      // do nothing, but can refresh the UI immediately.
+                      // you can use _items1 as it's select mode changed;
+                    });
+                    _multiSelectKey.currentState!.validate();
                   },
                 ),
               ),
@@ -211,37 +245,56 @@ class _MyHomePageState extends State<MyHomePage> {
               //################################################################################################
               // MultiSelectChipField
               //################################################################################################
-              MultiSelectChipField(
-                items: _items,
+              MultiSelectCommonField(
+                itemViewType: ItemViewType.IMAGE,
+                listType: ListTypes.block,
+                items: _items4,
                 initialValue: [_animals[4], _animals[7], _animals[9]],
-                title: Text("Animals"),
-                headerColor: Colors.blue.withOpacity(0.5),
+                title: Text("Animals4"),
+                headerColor: Colors.red.withOpacity(0.5),
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.blue[700], width: 1.8),
+                  border: Border.all(color: Colors.blue[700]!, width: 1.8),
                 ),
-                selectedChipColor: Colors.blue.withOpacity(0.5),
+                selectedColor: Colors.blue.withOpacity(0.5),
                 selectedTextStyle: TextStyle(color: Colors.blue[800]),
-                onTap: (values) {
+                onTap: (value) {
                   //_selectedAnimals4 = values;
                 },
+                // itemViewType: MultiSelectitemViewType.Image,
               ),
               SizedBox(height: 40),
               //################################################################################################
               // MultiSelectDialogField with initial values
               //################################################################################################
               MultiSelectDialogField(
-                onConfirm: (val) {
-                  _selectedAnimals5 = val;
-                },
-                dialogWidth: MediaQuery.of(context).size.width * 0.7,
-                items: _items,
-                initialValue:
-                    _selectedAnimals5, // setting the value of this in initState() to pre-select values.
+                fieldPanelConfig: MultiSelectPanelConfig(
+                  items: _items5,
+                  itemViewType: ItemViewType.CHECKBOX,
+                  itemsDisplayMode: ItemsDisplayMode.cascade,
+                  checkBoxBorderShape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(15.0),
+                      bottom: Radius.circular(15.0),
+                    ),
+                  ),
+                ),
+                dialogPanelConfig: MultiSelectPanelConfig(
+                  items: _items5,
+                ),
               ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  bool hasSelected(List<MultiSelectItem<Animal>> items) {
+    for (var item in items) {
+      if (item.selected) {
+        return true;
+      }
+    }
+    return false;
   }
 }

@@ -32,7 +32,7 @@ All notable changes to this project will be documented in this file.
 
 ## [3.1.8] - 2021-02-15
 ### Fixed
-- [Slow with big list](https://github.com/CHB61/multi_select_flutter/issues/18). Using a ListView.builder solves this but haven't found a way to use ListView.builder when the listType is set to MultiSelectListType.CHIP. Currently when this is set, the widget renders a Wrap inside of a SingleChildScrollView. For now, if you have a big list, do not use `MultiSelectListType.CHIP`.
+- [Slow with big list](https://github.com/CHB61/multi_select_flutter/issues/18). Using a ListView.builder solves this but haven't found a way to use ListView.builder when the itemViewType is set to MultiSelectitemViewType.CHIP. Currently when this is set, the widget renders a Wrap inside of a SingleChildScrollView. For now, if you have a big list, do not use `MultiSelectitemViewType.CHIP`.
 ## [3.1.7] - 2021-02-14
 ### Changed
 - title param type from Text to Widget
@@ -104,7 +104,7 @@ However, since the declaration of the chipDisplay was missing the type (ex. Mult
 
 ### Changed
 - BREAKING: Replace `chipColor` with `unselectedColor` for dialog and bottomsheet widgets. Apply the color to unselected checkbox border or the 
-  unselected chip body depending which `listType` is used.
+  unselected chip body depending which `itemViewType` is used.
 - BREAKING: Replace deprecated `autovalidate` with `autovalidateMode` on FormField widgets
 
 ## [3.0.1] - 2020-09-28
@@ -212,7 +212,7 @@ A number of parameters that allow more customizations.
 - The addition of the MultiSelectBottomSheet widgets prompted a bit of a re-write in order to de-couple widgets. Didn't want the generic MultiSelectField to be responsible for both types (dialog, bottomsheet). The new structure makes more sense and is easier to work with.
 - MultiSelectField replaced with MultiSelectDialogField / MultiSelectBottomSheetField.
 - MultiSelectListDialog and MultiSelectChipDialog have been replaced with MultiSelectDialog.
-- dialogType replaced with listType, now accepts MultiSelectListType instead of MultiSelectDialogType.
+- dialogType replaced with itemViewType, now accepts MultiSelectitemViewType instead of MultiSelectDialogType.
 - Improved the look of validator text, matches the look of TextFormField validator style much more closely.
 - buttonText, confirmText, cancelText all now accept a Text widget instead of a string, allowing the removal of the textStyle param.
 

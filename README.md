@@ -28,7 +28,7 @@ By default these widgets render a MultiSelectChipDisplay below the field. This c
 ```dart
 MultiSelectDialogField(
   items: _animals.map((e) => MultiSelectItem(e, e.name)).toList(),
-  listType: MultiSelectListType.CHIP,
+  itemViewType: MultiSelectitemViewType.CHIP,
   onConfirm: (values) {
     _selectedAnimals = values;
   },
