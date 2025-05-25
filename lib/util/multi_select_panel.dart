@@ -1,6 +1,5 @@
-
 import 'package:flutter/material.dart';
-import 'package:multi_select_flutter/util/enums.dart';
+import '../util/enums.dart';
 import 'multi_select_item.dart';
 
 mixin MultiSelectMixIn<V> {
@@ -26,7 +25,10 @@ mixin MultiSelectMixIn<V> {
   Alignment? alignment;
 
   /// Style the Container that makes up the chip display.
-  BoxDecoration? decoration;
+  ShapeDecoration? panelDecoration;
+
+  /// Style the Container that makes up the chip display.
+  ShapeDecoration? itemDecoration;
 
   /// Style the text on the chips.
   TextStyle? textStyle;
@@ -38,7 +40,7 @@ mixin MultiSelectMixIn<V> {
   Icon? icon;
 
   /// Set a ShapeBorder. Typically a RoundedRectangularBorder.
-  ShapeBorder? borderShape;
+  ShapeBorder? itemBorderShape;
 
   /// Enables horizontal scrolling.
   bool canScroll = false;
@@ -50,7 +52,7 @@ mixin MultiSelectMixIn<V> {
   double? width;
 
   /// disabled
-  bool? disabled;
+  bool disabled = false;
 
   /// An enum that determines which type of list to render.
   ItemViewType? itemViewType;
@@ -64,12 +66,7 @@ mixin MultiSelectMixIn<V> {
   ItemsDisplayMode? itemsDisplayMode = ItemsDisplayMode.all;
 
   /// Style the Container that makes up the chip display.
-  BoxDecoration? checkBoxDecoration;
-
-  /// Set a ShapeBorder for the checkbox. Typically a CircleBorder.
-  ShapeBorder? checkBoxBorderShape;
-
-  Widget Function(MultiSelectItem<V>, BuildContext context)? itemBuilder;
+  ShapeDecoration? checkBoxDecoration;
 }
 
 class MultiSelectPanelConfig<V> with MultiSelectMixIn<V> {
@@ -90,7 +87,10 @@ class MultiSelectPanelConfig<V> with MultiSelectMixIn<V> {
     Alignment? alignment,
 
     /// Style the Container that makes up the chip display.
-    BoxDecoration? decoration,
+    ShapeDecoration? panelDecoration,
+
+    /// Style the Container that makes up the chip display.
+    ShapeDecoration? itemDecoration,
 
     // Style the text on the chips.
     TextStyle? textStyle,
@@ -117,10 +117,10 @@ class MultiSelectPanelConfig<V> with MultiSelectMixIn<V> {
     double? width,
 
     /// disabled
-    bool? disabled,
+    bool disabled = false,
 
     /// An enum that determines which type of list to render.
-    ItemViewType? itemViewType = ItemViewType.CHIP,
+    ItemViewType? itemViewType = ItemViewType.chip,
 
     /// An enum that determines which items to display.
     ItemsDisplayMode? itemsDisplayMode = ItemsDisplayMode.all,
@@ -132,7 +132,7 @@ class MultiSelectPanelConfig<V> with MultiSelectMixIn<V> {
     bool? showCheckmark = true,
 
     /// Style the Container that makes up the chip display.
-    BoxDecoration? checkBoxDecoration,
+    ShapeDecoration? checkBoxDecoration,
 
     /// Set a ShapeBorder for the checkbox. Typically a CircleBorder.
     ShapeBorder? checkBoxBorderShape,
@@ -146,11 +146,12 @@ class MultiSelectPanelConfig<V> with MultiSelectMixIn<V> {
     this.unselectedColor = unselectedColor;
     this.selectedColor = selectedColor;
     this.alignment = alignment;
-    this.decoration = decoration;
+    this.panelDecoration = panelDecoration;
+    this.itemDecoration = itemDecoration;
     this.textStyle = textStyle;
     this.colorator = colorator;
     this.icon = icon;
-    this.borderShape = borderShape;
+    itemBorderShape = borderShape;
     this.canScroll = canScroll;
     this.height = height;
     this.width = width;
@@ -158,9 +159,7 @@ class MultiSelectPanelConfig<V> with MultiSelectMixIn<V> {
     this.itemsDisplayMode = itemsDisplayMode!;
     this.listType = listType;
     this.showCheckmark = showCheckmark;
-    this.itemBuilder = itemBuilder;
     this.checkBoxDecoration = checkBoxDecoration;
-    this.checkBoxBorderShape = checkBoxBorderShape;
   }
 
   Widget buildMultiSelectPanel({
@@ -169,44 +168,38 @@ class MultiSelectPanelConfig<V> with MultiSelectMixIn<V> {
   }) {
     itemsToShow ??= items;
 
-    // if user has specified a chipDisplay, use its params
-    if (disabled ?? false) {
-      return Container();
-    } else {
-      return MultiSelectPanel<V>(
-        items: itemsToShow,
-        colorator: colorator,
-        disabled: disabled,
-        onTap: (item) {
-          if (state != null) {
-            state.setState(() {});
-          }
-          if (onTap != null) {
-            dynamic result = onTap!(item);
-          }
-        },
-        decoration: decoration,
-        unselectedColor: unselectedColor ??
-            ((selectedColor != null && selectedColor != Colors.transparent)
-                ? selectedColor!.withOpacity(0.35)
-                : null),
-        alignment: alignment,
-        textStyle: textStyle,
-        icon: icon,
-        borderShape: borderShape,
-        height: height,
-        width: width,
-        itemViewType: itemViewType,
-        listType: listType,
-        selectedColor: selectedColor,
-        canScroll: canScroll,
-        itemsDisplayMode: itemsDisplayMode!,
-        showCheckmark: showCheckmark,
-        itemBuilder: itemBuilder,
-        checkBoxDecoration: checkBoxDecoration,
-        checkBoxBorderShape: checkBoxBorderShape,
-      );
-    }
+    return MultiSelectPanel<V>(
+      items: itemsToShow,
+      colorator: colorator,
+      disabled: disabled,
+      onTap: (item) {
+        if (state != null) {
+          state.setState(() {});
+        }
+        if (onTap != null) {
+          dynamic result = onTap!(item);
+        }
+      },
+      panelDecoration: panelDecoration,
+      itemDecoration: itemDecoration,
+      unselectedColor: unselectedColor ??
+          ((selectedColor != null && selectedColor != Colors.transparent)
+              ? selectedColor!.withOpacity(0.35)
+              : null),
+      alignment: alignment,
+      textStyle: textStyle,
+      icon: icon,
+      borderShape: itemBorderShape,
+      height: height,
+      width: width,
+      itemViewType: itemViewType,
+      listType: listType,
+      selectedColor: selectedColor,
+      canScroll: canScroll,
+      itemsDisplayMode: itemsDisplayMode!,
+      showCheckmark: showCheckmark,
+      checkBoxDecoration: checkBoxDecoration,
+    );
   }
 
   @override
@@ -223,7 +216,11 @@ class MultiSelectPanelConfig<V> with MultiSelectMixIn<V> {
 /// A widget meant to display selected values as chips.
 // ignore: must_be_immutable
 class MultiSelectPanel<V> extends StatefulWidget with MultiSelectMixIn<V> {
+  Widget Function(MultiSelectItem<V>, BuildContext context)? itemBuilder;
+
   MultiSelectPanel({
+    super.key,
+
     /// The source list of selected items.
     List<MultiSelectItem<V>>? items,
 
@@ -240,7 +237,10 @@ class MultiSelectPanel<V> extends StatefulWidget with MultiSelectMixIn<V> {
     Alignment? alignment,
 
     /// Style the Container that makes up the chip display.
-    BoxDecoration? decoration,
+    ShapeDecoration? panelDecoration,
+
+    /// Style the Container that makes up the chip display.
+    ShapeDecoration? itemDecoration,
 
     // Style the text on the chips.
     TextStyle? textStyle,
@@ -267,10 +267,9 @@ class MultiSelectPanel<V> extends StatefulWidget with MultiSelectMixIn<V> {
     double? width,
 
     /// disabled
-    bool? disabled,
-
+    bool disabled = false, // 只显示，不可编辑更改
     /// An enum that determines which type of list to render.
-    ItemViewType? itemViewType = ItemViewType.CHIP,
+    ItemViewType? itemViewType = ItemViewType.chip,
 
     /// An enum that determines which items to display.
     ItemsDisplayMode? itemsDisplayMode = ItemsDisplayMode.all,
@@ -282,13 +281,13 @@ class MultiSelectPanel<V> extends StatefulWidget with MultiSelectMixIn<V> {
     bool? showCheckmark = true,
 
     /// Style the Container that makes up the chip display.
-    BoxDecoration? checkBoxDecoration,
+    ShapeDecoration? checkBoxDecoration,
 
     /// Set a ShapeBorder for the checkbox. Typically a CircleBorder.
     ShapeBorder? checkBoxBorderShape,
 
     /// function to build item
-    Widget Function(MultiSelectItem<V>, BuildContext context)? itemBuilder,
+    this.itemBuilder,
   }) {
     this.disabled = disabled;
     this.items = items;
@@ -296,11 +295,12 @@ class MultiSelectPanel<V> extends StatefulWidget with MultiSelectMixIn<V> {
     this.unselectedColor = unselectedColor;
     this.selectedColor = selectedColor;
     this.alignment = alignment;
-    this.decoration = decoration;
+    this.panelDecoration = panelDecoration;
+    this.itemDecoration = itemDecoration;
     this.textStyle = textStyle;
     this.colorator = colorator;
     this.icon = icon;
-    this.borderShape = borderShape;
+    itemBorderShape = borderShape;
     this.canScroll = canScroll;
     this.height = height;
     this.width = width;
@@ -308,12 +308,12 @@ class MultiSelectPanel<V> extends StatefulWidget with MultiSelectMixIn<V> {
     this.itemsDisplayMode = itemsDisplayMode!;
     this.listType = listType;
     this.showCheckmark = showCheckmark;
-    this.itemBuilder = itemBuilder;
     this.checkBoxDecoration = checkBoxDecoration;
-    this.checkBoxBorderShape = checkBoxBorderShape;
   }
 
   MultiSelectPanel.none({
+    super.key,
+
     /// The source list of selected items.
     List<MultiSelectItem<V>>? items,
 
@@ -333,7 +333,10 @@ class MultiSelectPanel<V> extends StatefulWidget with MultiSelectMixIn<V> {
     Alignment? alignment,
 
     /// Style the Container that makes up the chip display.
-    BoxDecoration? decoration,
+    ShapeDecoration? panelDecoration,
+
+    /// Style the Container that makes up the chip display.
+    ShapeDecoration? itemDecoration,
 
     /// Style the text on the chips.
     TextStyle? textStyle,
@@ -357,7 +360,7 @@ class MultiSelectPanel<V> extends StatefulWidget with MultiSelectMixIn<V> {
     double? width,
 
     /// disabled
-    bool? disabled,
+    bool disabled = false,
 
     /// An enum that determines which type of list to render.
     ItemViewType? itemViewType,
@@ -372,7 +375,7 @@ class MultiSelectPanel<V> extends StatefulWidget with MultiSelectMixIn<V> {
     bool? showCheckmark = true,
 
     /// Style the Container that makes up the chip display.
-    BoxDecoration? checkBoxDecoration,
+    ShapeDecoration? checkBoxDecoration,
 
     /// Set a ShapeBorder for the checkbox. Typically a CircleBorder.
     ShapeBorder? checkBoxBorderShape,
@@ -386,12 +389,13 @@ class MultiSelectPanel<V> extends StatefulWidget with MultiSelectMixIn<V> {
     this.unselectedColor = unselectedColor;
     this.selectedColor = selectedColor;
     this.alignment = alignment;
-    this.decoration = decoration;
+    this.panelDecoration = panelDecoration;
+    this.itemDecoration = itemDecoration;
     this.textStyle = textStyle;
     this.colorator = colorator;
     this.icon = icon;
-    this.borderShape = shape;
-    this.canScroll = canScroll;
+    itemBorderShape = shape;
+    canScroll = canScroll;
     this.height = height;
     this.width = width;
     this.itemViewType = itemViewType;
@@ -430,15 +434,16 @@ class MultiSelectPanel<V> extends StatefulWidget with MultiSelectMixIn<V> {
 
 class _MultiSelectPanelState<V> extends State<MultiSelectPanel<V>> {
   /// ScrollController for the MultiSelectChipDisplay.
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
     if (widget.items == null || widget.items!.isEmpty) return Container();
     return Container(
-        decoration: widget.decoration,
-        alignment: widget.alignment ?? Alignment.centerLeft,
-        child: _buildItems(context));
+      decoration: widget.panelDecoration,
+      alignment: widget.alignment ?? Alignment.centerLeft,
+      child: _buildItems(context),
+    );
   }
 
   Widget _buildItems(BuildContext context) {
@@ -452,10 +457,7 @@ class _MultiSelectPanelState<V> extends State<MultiSelectPanel<V>> {
       return Column(
         children: [
           _buildItemsBlock(context, widget.selectedValues),
-          Divider(
-            height: 1,
-            color: Colors.grey,
-          ),
+          Divider(height: 1, color: Colors.grey),
           _buildItemsBlock(context, widget.unSelectedValues),
         ],
       );
@@ -464,7 +466,9 @@ class _MultiSelectPanelState<V> extends State<MultiSelectPanel<V>> {
   }
 
   Widget _buildItemsBlock(
-      BuildContext context, List<MultiSelectItem<V>>? items) {
+    BuildContext context,
+    List<MultiSelectItem<V>>? items,
+  ) {
     if (items == null || items.isEmpty) return Container();
 
     if (widget.listType == ListTypes.horizontalList ||
@@ -493,7 +497,11 @@ class _MultiSelectPanelState<V> extends State<MultiSelectPanel<V>> {
                   itemCount: items.length,
                   itemBuilder: (ctx, index) {
                     return _buildItem(
-                        items[index], context, widget.itemViewType, widget);
+                      items[index],
+                      context,
+                      widget.itemViewType,
+                      widget,
+                    );
                   },
                 ),
               )
@@ -503,15 +511,20 @@ class _MultiSelectPanelState<V> extends State<MultiSelectPanel<V>> {
                 itemCount: items.length,
                 itemBuilder: (ctx, index) {
                   return _buildItem(
-                      items[index], context, widget.itemViewType, widget);
+                    items[index],
+                    context,
+                    widget.itemViewType,
+                    widget,
+                  );
                 },
               ),
       );
     } else if (widget.listType == ListTypes.block) {
       return Wrap(
         children: items
-            .map((item) =>
-                _buildItem(item, context, widget.itemViewType, widget))
+            .map(
+              (item) => _buildItem(item, context, widget.itemViewType, widget),
+            )
             .toList(),
       );
     }
@@ -520,6 +533,7 @@ class _MultiSelectPanelState<V> extends State<MultiSelectPanel<V>> {
   }
 
   void onItemChanged(item) {
+    if (widget.disabled) return; // 只显示，不可编辑更改
     setState(() {
       item.selected = !item.selected;
       if (widget.changedItems.contains(item)) {
@@ -532,7 +546,7 @@ class _MultiSelectPanelState<V> extends State<MultiSelectPanel<V>> {
     if (widget.onTap != null) widget.onTap!(item);
   }
 
-  Widget _buildItem<V>(
+  Widget _buildItem(
     MultiSelectItem<V> item,
     BuildContext context,
     ItemViewType? itemViewType,
@@ -546,30 +560,35 @@ class _MultiSelectPanelState<V> extends State<MultiSelectPanel<V>> {
     // if (widget.colorator != null) {
     //   curItemColor = widget.colorator!(item.value);
     // }
-    OutlinedBorder? borderShape = widget.borderShape as OutlinedBorder? ??
-        RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(15.0),
-            bottom: Radius.circular(15.0),
-          ),
-        );
+    itemViewType ??= ItemViewType.chip;
 
-    Color? selectedColor = widget.selectedColor != null
-        ? widget.selectedColor
-        : Theme.of(context).primaryColor.withOpacity(0.35);
+    final roundedRectangleBorder = RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(15.0),
+        bottom: Radius.circular(15.0),
+      ),
+    );
+    ShapeBorder? itemBorderShape = widget.itemDecoration?.shape ??
+        // widget.itemBorderShape as OutlinedBorder? ??
+        roundedRectangleBorder;
 
-    if (itemViewType == null ||
-        itemViewType == ItemViewType.CHIP ||
-        itemViewType == ItemViewType.IMAGE) {
+    if (itemBorderShape is! OutlinedBorder) {
+      itemBorderShape = roundedRectangleBorder;
+    }
+    Color? selectedColor = widget.selectedColor ??
+        Theme.of(context).primaryColor.withOpacity(0.35);
+
+    if (itemViewType == ItemViewType.chip ||
+        itemViewType == ItemViewType.image) {
       Widget label;
-      if (itemViewType == ItemViewType.IMAGE &&
+      if (itemViewType == ItemViewType.image &&
           item.imageUrl != null &&
           item.imageUrl!.isNotEmpty) {
-        label = Container(
+        label = SizedBox(
           width: widget.width ?? 80,
           child: Column(
             children: [
-              Image.asset(item.imageUrl!),
+              loadImageByPath(item.imageUrl!),
               Text(
                 item.label,
                 overflow: TextOverflow.ellipsis,
@@ -578,14 +597,10 @@ class _MultiSelectPanelState<V> extends State<MultiSelectPanel<V>> {
             ],
           ),
         );
-        ;
       } else {
-        label = Container(
+        label = SizedBox(
           width: widget.width,
-          child: Text(
-            item.label,
-            style: widget.textStyle,
-          ),
+          child: Text(item.label, style: widget.textStyle),
         );
       }
 
@@ -595,7 +610,7 @@ class _MultiSelectPanelState<V> extends State<MultiSelectPanel<V>> {
         child: ChoiceChip(
           showCheckmark: widget.showCheckmark,
           backgroundColor: widget.unselectedColor,
-          shape: borderShape,
+          shape: itemBorderShape,
           avatar: widget.icon != null
               ? Icon(
                   widget.icon!.icon,
@@ -613,11 +628,11 @@ class _MultiSelectPanelState<V> extends State<MultiSelectPanel<V>> {
           },
         ),
       );
-    } else if (itemViewType == ItemViewType.CHECKBOX) {
+    } else if (itemViewType == ItemViewType.checkBox) {
       return Container(
         margin: EdgeInsets.all(0),
         padding: const EdgeInsets.all(2.0),
-        decoration: BoxDecoration(),
+        decoration: widget.itemDecoration,
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -626,39 +641,50 @@ class _MultiSelectPanelState<V> extends State<MultiSelectPanel<V>> {
               onChanged: (_) {
                 onItemChanged(item);
               },
-              shape: widget.checkBoxBorderShape != null
-                  ? widget.checkBoxBorderShape as OutlinedBorder
+              shape: widget.checkBoxDecoration != null
+                  ? widget.checkBoxDecoration!.shape as OutlinedBorder
                   : null,
             ),
             SizedBox(width: 4.0),
-            Text(
-              item.label,
-              style: widget.textStyle,
-            ),
+            Text(item.label, style: widget.textStyle),
           ],
         ),
       );
-    } else if (itemViewType == ItemViewType.CHECKBOX_LIST) {
+    } else if (itemViewType == ItemViewType.checkBoxList) {
       return Container(
         margin: EdgeInsets.all(0),
         padding: const EdgeInsets.all(2.0),
         height: widget.height,
         width: widget.width ?? MediaQuery.of(context).size.width * 0.73,
         child: CheckboxListTile(
-          title: Text(
-            item.label,
-            style: widget.textStyle,
-          ),
+          title: Text(item.label, style: widget.textStyle),
           value: item.selected,
           onChanged: (_) {
             onItemChanged(item);
           },
           controlAffinity: ListTileControlAffinity.leading,
-          shape: borderShape,
+          shape: itemBorderShape,
+          checkboxShape: widget.checkBoxDecoration != null
+              ? widget.checkBoxDecoration!.shape as OutlinedBorder
+              : null,
         ),
+      );
+    } else if (itemViewType == ItemViewType.text) {
+      return Container(
+        margin: EdgeInsets.all(0),
+        padding: const EdgeInsets.all(2.0),
+        child: Text(item.label, style: widget.textStyle),
       );
     } else {
       return Container();
+    }
+  }
+
+  loadImageByPath(String s) {
+    if (s.startsWith("http")) {
+      return Image.network(s);
+    } else {
+      return Image.asset(s);
     }
   }
 }

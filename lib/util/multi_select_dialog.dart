@@ -1,255 +1,310 @@
+
 import 'package:flutter/material.dart';
-import 'package:multi_select_flutter/util/multi_select_panel.dart';
-import '../util/multi_select_item.dart';
-import '../util/multi_select_actions.dart';
+import 'package:multi_select_flutter/common/multi_select_feild.dart';
+import 'package:multi_select_flutter/util/enums.dart';
+import '../util/multi_select_panel.dart';
+// import '../util/multi_select_actions.dart';
 
-enum DialogType {
-  /// A bottom sheet widget containing either a classic checkbox style list, or a chip style list.
-  bottomSheet,
+class MultiSelectDialogConfig<V> extends MultiSelectFieldConfig<V> {
+  bool showOpButtons;
+  Decoration? buttonDecoration;
 
-  /// A dialog widget containing either a classic checkbox style list, or a chip style list.
-  dialog,
-}
+  DialogType? dialogType;
 
-/// A bottom sheet widget containing either a classic checkbox style list, or a chip style list.
-class MultiSelectDialog<T> extends StatefulWidget with MultiSelectActions<T> {
-  /// panel that will be displayed on the bottom sheet.
-  MultiSelectPanelConfig<T> dialogPanelConfig;
-
-  DialogType dialogType;
-
-  /// The text at the top of the BottomSheet.
-  final Widget? title;
-
-  /// Fires when the an item is selected / unselected.
-  final void Function(List<T>)? onSelectionChanged;
-
-  /// Fires when confirm is tapped.
-  final void Function(List<T>)? onConfirm;
-
-  /// Text on the confirm button.
-  final Text? confirmText;
-
-  /// Text on the cancel button.
-  final Text? cancelText;
-
-  /// Set the initial height of the BottomSheet.
-  final double? initialChildSize;
-
-  /// Set the minimum height threshold of the BottomSheet before it closes.
-  final double? minChildSize;
-
-  /// Set the maximum height of the BottomSheet.
-  final double? maxChildSize;
-
-  /// Toggles search functionality.
-  final bool searchable;
-
-  /// Set the placeholder text of the search field.
-  final String? searchHint;
-
-  /// Icon button that shows the search field.
-  final Icon? searchIcon;
-
-  /// Icon button that hides the search field
-  final Icon? closeSearchIcon;
-
-  /// Style the search text.
-  final TextStyle? searchTextStyle;
-
-  /// Style the search hint.
-  final TextStyle? searchHintStyle;
-
-  /// Style the text on the chips or list tiles.
-  final TextStyle? itemsTextStyle;
-
-  /// Style the text on the selected chips or list tiles.
-  final TextStyle? selectedItemsTextStyle;
-
-  /// Set the color of the check in the checkbox
-  final Color? checkColor;
-
-  MultiSelectDialog({
-    super.key,
-    required this.dialogType,
-    required this.dialogPanelConfig,
-    this.title,
-    this.onSelectionChanged,
-    this.onConfirm,
-    this.cancelText,
-    this.confirmText,
-    this.initialChildSize,
-    this.minChildSize,
-    this.maxChildSize,
-    this.itemsTextStyle,
-    this.searchable = false,
-    this.searchIcon,
-    this.closeSearchIcon,
-    this.searchTextStyle,
-    this.searchHint,
-    this.searchHintStyle,
-    this.selectedItemsTextStyle,
-    this.checkColor,
+  MultiSelectDialogConfig({
+    super.panelConfig,
+    super.title,
+    super.buttonText,
+    super.buttonIcon,
+    super.onSelectionChanged,
+    super.onConfirm,
+    super.confirmText,
+    super.cancelText,
+    super.initialChildSize,
+    super.minChildSize,
+    super.maxChildSize,
+    super.shape,
+    super.barrierColor,
+    super.backgroundColor,
+    super.itemsTextStyle,
+    super.selectedItemsTextStyle,
+    super.separateSelectedItems = false,
+    super.checkColor,
+    super.isDismissible = false,
+    super.state,
+    super.itemViewTypeOn,
+    super.searchable = false,
+    super.searchHint,
+    super.searchIcon,
+    super.closeSearchIcon,
+    super.searchTextStyle,
+    super.searchHintStyle,
+    this.dialogType = DialogType.dialog,
+    super.showHeader = true,
+    super.showItems = true,
+    super.showErrors = true,
+    super.headerDecoration,
+    // super.itemsDecoration,
+    super.errorsDecoration,
+    this.showOpButtons = true,
+    this.buttonDecoration,
   });
 
-  @override
-  _MultiSelectDialogState<T> createState() => _MultiSelectDialogState<T>();
-}
+  /// Builds the button that opens the dialog.
+  InkWell buildButton(
+    BuildContext context,
+    bool hasError,
+    State state,
+    FormFieldState<List<dynamic>> formFieldState,
+  ) {
+    final selectedValues = panelConfig!.selectedValues;
+    Widget buttonChild;
 
-class _MultiSelectDialogState<T> extends State<MultiSelectDialog<T>> {
-  bool _showSearch = false;
-  List<MultiSelectItem<T>>? filteredList = [];
-  String searchQuery = "";
-
-  @override
-  Widget build(BuildContext context) {
-    final multiSelectPanel = widget.dialogPanelConfig.buildMultiSelectPanel(
-        itemsToShow: (searchQuery.isNotEmpty)
-            ? filteredList
-            : widget.dialogPanelConfig.items);
-
-    final column = Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              widget.title ??
-                  Text(
-                    "Select",
-                    style: TextStyle(fontSize: 18),
-                  ),
-              widget.searchable
-                  ? IconButton(
-                      icon: _showSearch
-                          ? widget.closeSearchIcon ?? Icon(Icons.close)
-                          : widget.searchIcon ?? Icon(Icons.search),
-                      onPressed: () {
-                        setState(() {
-                          _showSearch = !_showSearch;
-                        });
-                      },
-                    )
-                  : Padding(
-                      padding: EdgeInsets.all(15),
-                    ),
-            ],
-          ),
-        ),
-        _showSearch
-            ? Container(
-                padding: const EdgeInsets.only(left: 10),
-                child: TextField(
-                  autofocus: true,
-                  style: widget.searchTextStyle,
-                  decoration: InputDecoration(
-                    hintStyle: widget.searchHintStyle,
-                    hintText: widget.searchHint ?? "Search",
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                          color: widget.dialogPanelConfig.selectedColor ??
-                              Theme.of(context).primaryColor),
-                    ),
-                  ),
-                  onChanged: (val) {
-                    setState(() {
-                      searchQuery = val;
-                      filteredList = widget.updateSearchQuery(
-                          val, widget.dialogPanelConfig.items);
-                    });
-                  },
-                ),
-              )
-            : Container(),
-        SizedBox(height: 15),
-        // multi select panel
-        ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height * 0.3,
-          ),
-          child: multiSelectPanel,
-        ),
-        // buttons: cancel and confirm
-        Container(
-          padding: EdgeInsets.all(2),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Expanded(
-                child: TextButton(
-                  onPressed: () {
-                    setState(() {
-                      if (multiSelectPanel is MultiSelectPanel<T>) {
-                        multiSelectPanel.clearChangedItems();
-                      }
-                    });
-
-                    Navigator.pop(context, 'cancel');
-                  },
-                  child: widget.cancelText ??
-                      Text(
-                        "CANCEL",
-                        style: TextStyle(
-                          color:
-                              (widget.dialogPanelConfig.selectedColor != null &&
-                                      widget.dialogPanelConfig.selectedColor !=
-                                          Colors.transparent)
-                                  ? widget.dialogPanelConfig.selectedColor!
-                                      .withOpacity(1)
-                                  : Theme.of(context).primaryColor,
-                        ),
-                      ),
+    if (panelConfig!.itemViewType == ItemViewType.text) {
+      buttonChild = buttonText ?? Text("Select");
+    } else {
+      buttonChild = Container(
+        decoration:
+            buttonDecoration ??
+            BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color:
+                      hasError
+                          ? Colors.red.shade800.withOpacity(0.6)
+                          : selectedValues != null && selectedValues.isNotEmpty
+                          ? (panelConfig!.selectedColor != null &&
+                                  panelConfig!.selectedColor !=
+                                      Colors.transparent)
+                              ? panelConfig!.selectedColor!
+                              : Theme.of(context).primaryColor
+                          : Colors.black45,
+                  width:
+                      selectedValues != null && selectedValues.isNotEmpty
+                          ? (hasError)
+                              ? 1.4
+                              : 1.8
+                          : 1.2,
                 ),
               ),
-              SizedBox(width: 10),
-              Expanded(
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.pop(context, 'confirm');
-                  },
-                  child: widget.confirmText ??
-                      Text(
-                        "OK",
-                        style: TextStyle(
-                          color:
-                              (widget.dialogPanelConfig.selectedColor != null &&
-                                      widget.dialogPanelConfig.selectedColor !=
-                                          Colors.transparent)
-                                  ? widget.dialogPanelConfig.selectedColor!
-                                      .withOpacity(1)
-                                  : Theme.of(context).primaryColor,
-                        ),
-                      ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-
-    if (widget.dialogType == DialogType.dialog) {
-      return Container(
-        child: column,
-      );
-    } else if (widget.dialogType == DialogType.bottomSheet) {
-      return Container(
-        child: DraggableScrollableSheet(
-          // should not set initialChildSize or maxChildSize
-          // initialChildSize: widget.initialChildSize ?? 0.3,
-          // maxChildSize: widget.maxChildSize ?? 0.6,
-          minChildSize: widget.minChildSize ?? 0.3,
-          expand: false,
-          builder: (BuildContext context, ScrollController scrollController) {
-            return column;
-          },
+            ),
+        padding: EdgeInsets.all(10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            buttonText ?? Text("Select"),
+            buttonIcon ?? Icon(Icons.arrow_downward),
+          ],
         ),
       );
     }
 
+    return InkWell(
+      onTap:
+          panelConfig != null
+              ? () {
+                if (dialogType == DialogType.bottomSheet) {
+                  _showBottomSheet(context, state, formFieldState);
+                  return;
+                } else if (dialogType == DialogType.dialog) {
+                  _showDialog(context, state, formFieldState);
+                  return;
+                }
+              }
+              : null,
+      child: buttonChild,
+    );
+  }
+
+  void _showDialog(
+    BuildContext context,
+    State state,
+    FormFieldState<List<dynamic>> formFieldState,
+  ) async {
+    final result = await showDialog<String>(
+      barrierColor: barrierColor,
+      useSafeArea: true,
+      context: context,
+      builder: (context) {
+        return Dialog(
+          // insetPadding: EdgeInsets.only(bottom: 100),
+          // alignment: Alignment.topCenter,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minWidth: MediaQuery.of(context).size.width * 0.8,
+              maxWidth: MediaQuery.of(context).size.width * 0.9,
+              minHeight: MediaQuery.of(context).size.height * 0.5,
+              maxHeight: MediaQuery.of(context).size.height * 0.9,
+            ),
+            child: MultiSelectDialog<V>(
+              formFieldState: formFieldState,
+              dialogConfig: this,
+            ),
+          ),
+        );
+      },
+    );
+
+    state.setState(() {});
+  }
+
+  void _showBottomSheet(
+    BuildContext context,
+    State state,
+    FormFieldState<List<dynamic>> formFieldState,
+  ) async {
+    final result = await showModalBottomSheet<String>(
+      isDismissible: isDismissible,
+      backgroundColor: backgroundColor,
+      barrierColor: barrierColor,
+      shape:
+          shape ??
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(15.0)),
+          ),
+      isScrollControlled: true,
+      context: context,
+      builder: (context) {
+        return MultiSelectDialog<V>(
+          formFieldState: formFieldState,
+          dialogConfig: this,
+        );
+      },
+    );
+
+    state.setState(() {});
+  }
+}
+
+/// A bottom sheet widget containing either a classic checkbox style list, or a chip style list.
+class MultiSelectDialog<T> extends StatefulWidget {
+  FormFieldState<List> formFieldState;
+
+  MultiSelectDialogConfig<T> dialogConfig;
+  bool showOpButtons = true;
+
+  MultiSelectDialog({
+    super.key,
+    required this.formFieldState,
+    required this.dialogConfig,
+  });
+
+  @override
+  State createState() => _MultiSelectDialogState<T>();
+}
+
+class _MultiSelectDialogState<T> extends State<MultiSelectDialog<T>> {
+  MultiSelectDialogConfig<T> get dialogConfig => widget.dialogConfig;
+  @override
+  Widget build(BuildContext context) {
+    /// 总共分成五个部分：
+    /// 1. 标题部分（需区分是否可以搜索）
+    /// 2. 搜索面板部分（需区分是否可以搜索）
+    /// 3. 选项面板部分
+    /// 4. 操作按钮部分
+    /// 5. 错误信息部分
+
+    final multiSelectPanel = dialogConfig.buildMultiSelectPanel();
+    final selectedValues = dialogConfig.panelConfig!.selectedValues;
+
+    final children = <Widget>[];
+    if (dialogConfig.showHeader) {
+      children.add(dialogConfig.buildHeader(this));
+    }
+
+    if (dialogConfig.searchable) {
+      children.add(dialogConfig.buildSearch(this));
+    }
+
+    if (dialogConfig.showItems) {
+      children.add(multiSelectPanel);
+    }
+
+    if (dialogConfig.showOpButtons) {
+      children.add(buildOpButtons(multiSelectPanel));
+    }
+
+    if (dialogConfig.showErrors && widget.formFieldState.hasError) {
+      children.add(SizedBox(height: 5));
+
+      children.add(dialogConfig.buildErrors(widget.formFieldState.errorText!));
+    }
+
+    final column = Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: children,
+    );
+
+    /// 区分 dialog 和 bottomSheet 两种类型的 dialog
+    if (dialogConfig.dialogType == DialogType.dialog) {
+      return Container(child: column);
+    } else if (dialogConfig.dialogType == DialogType.bottomSheet) {
+      return DraggableScrollableSheet(
+        // should not set initialChildSize or maxChildSize
+        // initialChildSize: widget.initialChildSize ?? 0.3,
+        // maxChildSize: widget.maxChildSize ?? 0.6,
+        minChildSize: dialogConfig.minChildSize ?? 0.3,
+        expand: false,
+        builder: (BuildContext context, ScrollController scrollController) {
+          return column;
+        },
+      );
+    }
+
     return Container();
+  }
+
+  buildOpButtons(Widget multiSelectPanel) {
+    TextStyle buttonTextStyle = TextStyle(
+      color:
+          (dialogConfig.panelConfig!.selectedColor != null &&
+                  dialogConfig.panelConfig!.selectedColor !=
+                      Colors.transparent)
+              ? dialogConfig.panelConfig!.selectedColor!.withOpacity(1)
+              : Theme.of(context).primaryColor,
+    );
+
+    return Container(
+      padding: EdgeInsets.all(2),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Expanded(
+            child: TextButton(
+              onPressed: () {
+                setState(() {
+                  if (multiSelectPanel is MultiSelectPanel<T>) {
+                    multiSelectPanel.clearChangedItems();
+                  }
+                });
+
+                Navigator.pop(context, 'cancel');
+              },
+              child:
+                  dialogConfig.cancelText ??
+                  Text("CANCEL", style: buttonTextStyle),
+            ),
+          ),
+          SizedBox(width: 10),
+          Expanded(
+            child: TextButton(
+              onPressed: () {
+                if (dialogConfig.onConfirm != null) {
+                  dialogConfig.onConfirm!(
+                    dialogConfig.panelConfig!.selectedValues,
+                  );
+                }
+
+                Navigator.pop(context, 'confirm');
+              },
+              child:
+                  dialogConfig.confirmText ??
+                  Text("OK", style: buttonTextStyle),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
